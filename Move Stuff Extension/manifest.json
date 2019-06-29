@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "name": "Extension",
+  "description": "Goofed ya. Randomly moves content on pages. Office prank.",
+  "version": "1.0.0",
+  "author": "Alec Maly",
+  "content_scripts": [{
+    "matches": ["*://*/*"],
+    "js": ["move.js"]
+  }],
+  "permissions": ["activeTab"]
+}
