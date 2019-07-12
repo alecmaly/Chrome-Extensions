@@ -32,28 +32,14 @@ window.onload = () => {
 
 
 
-    // FUNCTION to download image
-    function download(uri, original_uri) {
+    function downloadImage(uri) {
         // create anchor tag and download
         var link = document.createElement('a');
         link.href = uri;
-        link.download = original_uri.split('/')[5] + '.jpg';
+        link.download = uri.split('/')[uri.split('/').length - 1] + '.jpg';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    }
-
-
-    function downloadImage(uri) {
-        // fetch URI and create local blob uri from response
-        fetch(uri, {"credentials":"omit","referrer":"https://www.chegg.com/homework-help/Fundamentals-of-Database-Systems-7th-edition-chapter-11-problem-3RQ-solution-9780133970777","referrerPolicy":"no-referrer-when-downgrade","body":null,"method":"GET","mode":"cors"})
-            .then(response => { response.blob() })
-            .then(image => {
-            // Then create a local URL for that image and print it 
-            outside = URL.createObjectURL(image)
-            download(outside, uri);
-            console.log('outside')
-            }).catch(err => console.log(err))
     }
 }
 
