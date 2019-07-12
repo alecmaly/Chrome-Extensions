@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Download Teams Photos",
-  "description": "Downloads Teams Conversation photos that are not saved to SharePoint Document Library. Open Microsoft Teams in web client, navigate to conversation, click 'download' button at the top right (next to public/private tag).",
-  "version": "1.0.1",
+  "description": "Downloads Teams Conversation photos that are not saved to SharePoint Document Library.",
+  "version": "1.0.2",
   "author": "Alec Maly",
   "content_scripts": [
     {
