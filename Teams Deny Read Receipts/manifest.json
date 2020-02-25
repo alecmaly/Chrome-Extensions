@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "Extension",
+  "description": "Testing.",
+  "version": "1.0.0",
+  "author": "Alec Maly",
+  "content_scripts": [
+    {
+      "matches": ["*://*.teams.microsoft.com/*"],
+      "js": ["inject.js"]
+    }
+  ]
+}
+
