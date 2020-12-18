@@ -1,0 +1,19 @@
+
+{
+  "manifest_version": 2,
+  "name": "SOS TEST",
+  "description": "SOS",
+  "version": "2.1.2",
+  "author": "Alec Maly",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.michigan.gov/sos/*"],
+      "js": ["michiganGov.js"]
+    }
+  ],
+  "permissions": ["activeTab", "https://sosmakeanappointment.as.me/"]
+}

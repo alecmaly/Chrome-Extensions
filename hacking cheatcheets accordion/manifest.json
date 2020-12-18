@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+  "name": "Alec's Hacking Accordion",
+  "description": "Accordion",
+  "version": "2.1.2",
+  "author": "Alec Maly",
+  "content_scripts": [
+    {
+      "matches": ["*://*.book.hacktricks.xyz/*"],
+      "js": ["gitbooks.js"]
+    },
+    {
+      "matches": ["*://*.github.com/swisskyrepo/PayloadsAllTheThings/blob/master/*"],
+      "js": ["payloadallthethings.js"]
+    },   
+    {
+      "matches": ["*://*.notion.so/*"],
+      "js": ["notion.js"]
+    },
+     
+    {
+      "matches": ["*://*.gtfobins.github.io/*"],
+      "js": ["gtfobinsSearch.js"],
+      "run_at": "document_idle"
+    }      
+
+  ],
+    "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "permissions": ["activeTab", "storage"]
+}
