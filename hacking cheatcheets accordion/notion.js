@@ -144,7 +144,114 @@ function moveTableOfContentsToSideNav() {
 }
 
 
+/* STARS BUTTON FUNCTIONS */
+function createStarsButtons() {
+  var attach_ele = document.querySelectorAll('[class*="notion-sidebar-switcher"]')[0].parentNode
 
+
+  var button = document.createElement('button')
+  button.id = 'my_stars_button'
+  button.textContent = '3 stars'
+  button.onclick = () => focusStars('***')
+  attach_ele.appendChild(button)
+
+  var button = document.createElement('button')
+  button.textContent = '4 stars'
+  button.onclick = () => focusStars('****')
+  attach_ele.appendChild(button)
+
+  var button = document.createElement('button')
+  button.textContent = 'All Stars'
+  button.onclick = () => focusStars('*')
+  attach_ele.appendChild(button)
+
+  var button = document.createElement('button')
+  button.textContent = 'Clear Stars'
+  button.onclick = () => clearStars()
+  attach_ele.appendChild(button)
+}
+
+
+function clearStars() {
+  var page_content = document.querySelector('.notion-page-content')
+  var eles = page_content.children
+  Array.from(eles).forEach(ele => { ele.style.display = 'block' })
+}
+
+
+function focusStars(searchStars) {
+  var page_content = document.querySelector('.notion-page-content')
+  var eles = page_content.children
+
+  // hide everything
+  let display_indexes = []
+
+  // for each ele
+  for (let i = 0; i < eles.length; i++) {
+    
+    let ele = eles[i]
+
+    let starMatches = ele.innerText.match(/(\d?)+\*{3,}(\d?)+/g) || []
+    let starMatches_stars_only = starMatches.map(match => { return match.match(/\*{3,}/g) })[0] || []
+
+    
+    // no stars found, hide ele if necessary and break out of loop
+    let allStars = searchStars == '*'
+    
+    /// FIX THIS HERE
+    if (allStars) {
+      if (starMatches.length == 0) {
+        !display_indexes.includes(i) ? ele.style.display = 'none' : ele.style.display = 'block'
+        continue
+      }
+    } else {
+      if (starMatches.length == 0 || !starMatches_stars_only.includes(searchStars)) {
+        !display_indexes.includes(i) ? ele.style.display = 'none' : ele.style.display = 'block'
+        continue
+      }
+    }
+    
+
+    /* stars found */
+    let beforeNum = Math.max.apply(Math, starMatches.map(val => { return parseInt(val.split('*')[0]) || 0 }))
+    let afterNum = Math.max.apply(Math, starMatches.map(val => { return parseInt(val.split('*').slice(-1)[0]) || 0 }))
+    
+    // walk up parents to redisplay relavent header and sub_header
+    showHeaders(ele)
+
+    // redisplay previous blocks
+    for (let b = 0; b <= beforeNum; b++)
+      eles[i-b].style.display = 'block'
+
+    // push to array indexes to not hide
+    for (let a = 0; a <= afterNum; a++)
+      display_indexes.push(i+a)
+
+    
+  }
+
+  // reshow if they are hidden
+  display_indexes.forEach(i => { eles[i].style.display = 'block' })
+
+  function showHeaders(ele, hasFoundHeader = false, hasFoundSubHeader = false) {
+    if (!ele.previousElementSibling)
+      return
+    // header
+    if (ele.previousElementSibling.className.includes('header') && !ele.previousElementSibling.className.includes('sub_header') && !hasFoundHeader) {
+      ele.previousElementSibling.style.display = 'block'
+      hasFoundHeader = true
+    }
+    
+    // sub_header
+    if (ele.previousElementSibling.className.includes('sub_header') && !hasFoundSubHeader) {
+      ele.previousElementSibling.style.display = 'block'
+      hasFoundSubHeader = true
+    } 
+
+    if (!hasFoundHeader || !hasFoundSubHeader)
+      showHeaders(ele.previousElementSibling, hasFoundHeader, hasFoundSubHeader)
+  }
+}
 
 
 
@@ -162,8 +269,6 @@ function start() {
         moveTableOfContentsToSideNav()
       }
         
-
-
       if (items.notionAccordionEnabled) {
         // set interval to refresh page
         setInterval(() => {
@@ -173,6 +278,25 @@ function start() {
         }, 1000);
       }
      
+
+      // Stars
+      setInterval(() => {
+        if (document.querySelectorAll('#my_stars_button').length == 0) {
+          createStarsButtons();
+        }
+        
+        // highlight stars
+        if (document.querySelector('.notion-page-content') && !document.querySelector('#colored-stars')) {       
+          var page_content = document.querySelector('.notion-page-content')
+          var eles = page_content.children
+
+          Array.from(eles).forEach(ele => {
+            ele.innerHTML = ele.innerHTML.replace(/(\d?)+\*{3,}(\d?)+/g, '<span id="colored-stars" style="background-color:yellow">$&</span>')
+          })
+        }
+        
+         
+      }, 1000);
 
 
   });
