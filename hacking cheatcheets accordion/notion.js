@@ -146,6 +146,9 @@ function moveTableOfContentsToSideNav() {
 
 /* STARS BUTTON FUNCTIONS */
 function createStarsButtons() {
+  if (!document.querySelectorAll('[class*="notion-sidebar-switcher"]'))
+    return
+
   var attach_ele = document.querySelectorAll('[class*="notion-sidebar-switcher"]')[0].parentNode
 
 
@@ -285,18 +288,15 @@ function start() {
           createStarsButtons();
         }
         
-        // highlight stars
-        if (document.querySelector('.notion-page-content') && !document.querySelector('#colored-stars')) {       
-          var page_content = document.querySelector('.notion-page-content')
-          var eles = page_content.children
-
-          Array.from(eles).forEach(ele => {
-            ele.innerHTML = ele.innerHTML.replace(/(\d?)+\*{3,}(\d?)+/g, '<span id="colored-stars" style="background-color:yellow">$&</span>')
-          })
-        }
         
-         
       }, 1000);
+
+
+      // highlight stars
+      setInterval(() => {
+        var eles = document.querySelectorAll('.token.comment,.notion-text-block')
+        Array.from(eles).forEach(ele => { if (ele.innerText.includes('***')) { ele.style.backgroundColor = 'yellow'; ele.id = 'colored-stars' } })
+      }, 5000)
 
 
   });
@@ -304,3 +304,5 @@ function start() {
 
 
 start()
+
+

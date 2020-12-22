@@ -17,13 +17,19 @@
       "matches": ["*://*.notion.so/*"],
       "js": ["notion.js"]
     },
-     
     {
       "matches": ["*://*.gtfobins.github.io/*"],
       "js": ["gtfobinsSearch.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.lolbas-project.github.io/*"],
+      "js": ["lolbas.js"],
+      "run_at": "document_idle"
     }      
 
+
+    
   ],
     "options_ui": {
     "page": "options.html",
