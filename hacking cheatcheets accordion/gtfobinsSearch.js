@@ -44,8 +44,120 @@ function updateVisibility() {
     } else 
       row.style.display = 'none'
   })
+
+  unique_binaries()
 }
 
+
+function unique_binaries() {
+  var paths = `/usr/lib/x86_64-linux-gnu/lxc/lxc-user-nic
+  /usr/lib/eject/dmcrypt-get-device
+  /usr/lib/snapd/snap-confine
+  /usr/lib/openssh/ssh-keysign
+  /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+  /usr/lib/policykit-1/polkit-agent-helper-1
+  /usr/bin/newuidmap
+  /usr/bin/passwd
+  /usr/bin/chsh
+  /usr/bin/newgrp
+  /usr/bin/gpasswd
+  /usr/bin/newgidmap
+  /usr/bin/pkexec
+  /usr/bin/traceroute6.iputils
+  /usr/bin/sudo
+  /usr/bin/at
+  /usr/bin/chfn
+  /bin/fusermount
+  /bin/umount
+  /bin/mount
+  /bin/ping
+  /bin/su
+  /usr/lib/vmware-tools/bin64/vmware-user-suid-wrapper
+  /usr/lib/vmware-tools/bin32/vmware-user-suid-wrapper
+  /usr/sbin/uuidd
+  /usr/sbin/pppd
+  /usr/bin/mtr
+  /usr/bin/sudoedit
+  /sbin/mount.nfs
+  /bin/ping6
+  /bin/nano
+  /opt/gitlab/embedded/bin/ksu
+  /snap/core/7270/bin/mount
+  /snap/core/7270/bin/ping
+  /snap/core/7270/bin/ping6
+  /snap/core/7270/bin/su
+  /snap/core/7270/bin/umount
+  /snap/core/7270/usr/bin/chfn
+  /snap/core/7270/usr/bin/chsh
+  /snap/core/7270/usr/bin/gpasswd
+  /snap/core/7270/usr/bin/newgrp
+  /snap/core/7270/usr/bin/passwd
+  /snap/core/7270/usr/bin/sudo
+  /snap/core/7270/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+  /snap/core/7270/usr/lib/openssh/ssh-keysign
+  /snap/core/7270/usr/lib/snapd/snap-confine
+  /snap/core/7270/usr/sbin/pppd
+  /snap/core/8689/bin/mount
+  /snap/core/8689/bin/ping
+  /snap/core/8689/bin/ping6
+  /snap/core/8689/bin/su
+  /snap/core/8689/bin/umount
+  /snap/core/8689/usr/bin/chfn
+  /snap/core/8689/usr/bin/chsh
+  /snap/core/8689/usr/bin/gpasswd
+  /snap/core/8689/usr/bin/newgrp
+  /snap/core/8689/usr/bin/passwd
+  /snap/core/8689/usr/bin/sudo
+  /snap/core/8689/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+  /snap/core/8689/usr/lib/openssh/ssh-keysign
+  /snap/core/8689/usr/lib/snapd/snap-confine
+  /snap/core/8689/usr/sbin/pppd
+  /usr/bin/mount
+  /usr/bin/su
+  /usr/bin/fusermount
+  /usr/bin/umount`
+  
+  var common_base_paths = ['/bin/', '/usr/', '/sbin/', '/snap/']
+
+
+  var binaries = paths.split('\n').map(path => { return path.split('/').splice(-1)[0].trim() })
+  
+  
+  var my_paths = document.querySelector('#myinput').value
+  
+  var my_binaries = my_paths.split('\n').filter(line => { return line != '' })
+  var unique_binaries = my_binaries.map(bin => {
+    // is base common? 
+    let isBaseUncommon = !common_base_paths.reduce((acc, base_path) => { return bin.startsWith(base_path) || acc }, false)
+    let isUniqueBinary = !binaries.includes(bin.split('/').splice(-1)[0].trim())
+
+    let val = ''
+    if (isBaseUncommon || isUniqueBinary) 
+      val += '<span style="color:red; font-weight:bold">' + bin + '</span>'
+    else 
+      val += '<span style="color: lightgrey">' + bin + '</span>'
+
+    if (isBaseUncommon)
+      val += ' (base is uncommon)'
+      
+    if (isUniqueBinary)
+      val += ' (possibly unique binary)'
+    
+    
+    return val
+  } )
+  
+  
+  if (document.getElementById('unique_binaries')) {
+    document.getElementById('unique_binaries').innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries.join('<br>')
+  } else {
+    var ele = document.createElement('div')
+    ele.id = 'unique_binaries'
+    ele.innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries.join('<br>')
+    document.querySelector('#bin-search-wrapper').appendChild(ele)
+  }
+
+}
 
 
 // color sudo
