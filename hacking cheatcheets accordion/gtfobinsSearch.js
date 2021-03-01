@@ -115,14 +115,42 @@ function unique_binaries() {
   /usr/bin/mount
   /usr/bin/su
   /usr/bin/fusermount
-  /usr/bin/umount`
+  /usr/bin/umount
+  /usr/libexec/amanda/calcsize
+  /usr/libexec/amanda/planner
+  /usr/libexec/amanda/runtar
+  /usr/libexec/amanda/application/amgtar
+  /usr/libexec/amanda/killpgrp
+  /usr/libexec/amanda/dumper
+  /usr/libexec/amanda/rundump
+  /usr/lib/openssh/ssh-keysign
+  /usr/lib/vmware-tools/bin32/vmware-user-suid-wrapper
+  /usr/lib/vmware-tools/bin64/vmware-user-suid-wrapper
+  /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+  /usr/lib/s-nail/s-nail-privsep
+  /usr/lib/eject/dmcrypt-get-device
+  /usr/bin/sudo
+  /usr/bin/newgrp
+  /usr/bin/chsh
+  /usr/bin/passwd
+  /usr/bin/chfn
+  /usr/bin/gpasswd
+  /usr/sbin/amservice
+  /usr/sbin/amcheck
+  /bin/mount
+  /bin/ping
+  /bin/fusermount
+  /bin/su
+  /bin/umount
+  /bin/ping6`
   
-  var common_base_paths = ['/bin/', '/usr/', '/sbin/', '/snap/']
 
+
+  var common_base_paths = ['/bin/', '/usr/', '/sbin/', '/snap/']
+  var unique_binary_for_searchsploit = []
 
   var binaries = paths.split('\n').map(path => { return path.split('/').splice(-1)[0].trim() })
-  
-  
+    
   var my_paths = document.querySelector('#myinput').value
   
   var my_binaries = my_paths.split('\n').filter(line => { return line != '' })
@@ -140,16 +168,21 @@ function unique_binaries() {
     if (isBaseUncommon)
       val += ' (base is uncommon)'
       
-    if (isUniqueBinary)
+    if (isUniqueBinary) {
       val += ' (possibly unique binary)'
+      unique_binary_for_searchsploit.push(bin.split('/').splice(-1)[0].trim())
+    }
     
     
     return val
   } )
   
+  // print searchsploit cmd to console
+  console.log(`printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"'; searchsploit {}" | grep -v "No Results"`)
+
   
   if (document.getElementById('unique_binaries')) {
-    document.getElementById('unique_binaries').innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries.join('<br>')
+    document.getElementById('unique_binaries').innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries.join('<br>') + '<br><br><h3>Searchsploit cmd to search for unique binaries:</h3>' + `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \\"{}\\"'; searchsploit {}" | grep -v "No Results"`
   } else {
     var ele = document.createElement('div')
     ele.id = 'unique_binaries'
