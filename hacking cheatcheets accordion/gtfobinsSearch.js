@@ -142,7 +142,16 @@ function unique_binaries() {
   /bin/fusermount
   /bin/su
   /bin/umount
-  /bin/ping6`
+  /bin/ping6
+  /lib/dbus-1/dbus-daemon-launch-helper 
+  /usr/bin/staprun 
+  /usr/bin/chage 
+  /usr/libexec/abrt-action-install-debuginfo-to-abrt-cache 
+  /usr/sbin/usernetctl 
+  /tmp/vmware-tools-distrib/lib/bin64/vmware-user-suid-wrapper 
+  /tmp/vmware-tools-distrib/lib/bin32/vmware-user-suid-wrapper 
+  /sbin/pam_timestamp_check 
+  /sbin/unix_chkpwd`
   
 
 
