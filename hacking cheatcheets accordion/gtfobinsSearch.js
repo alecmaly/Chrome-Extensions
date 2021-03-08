@@ -179,7 +179,7 @@ function unique_binaries() {
       
     if (isUniqueBinary) {
       val += ' (possibly unique binary)'
-      unique_binary_for_searchsploit.push(bin.split('/').splice(-1)[0].trim())
+      unique_binary_for_searchsploit.push(bin.split('/').splice(-1)[0].trim().replaceAll('-', ' '))
     }
     
     
