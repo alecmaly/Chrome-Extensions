@@ -187,11 +187,11 @@ function unique_binaries() {
   } )
   
   // print searchsploit cmd to console
-  console.log(`printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"'; searchsploit {}" | grep -v "No Results"`)
+  console.log(`printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; searchsploit {}" | grep -v "No Results"`)
 
   
   if (document.getElementById('unique_binaries')) {
-    document.getElementById('unique_binaries').innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries.join('<br>') + '<br><br><h3>Searchsploit cmd to search for unique binaries:</h3>' + `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \\"{}\\"'; searchsploit {}" | grep -v "No Results"`
+    document.getElementById('unique_binaries').innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries.join('<br>') + '<br><br><h3>Searchsploit cmd to search for unique binaries:</h3>' + `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \\"{}\\"\\n'; searchsploit {}" | grep -v "No Results"`
   } else {
     var ele = document.createElement('div')
     ele.id = 'unique_binaries'
