@@ -45,11 +45,11 @@ function updateVisibility() {
       row.style.display = 'none'
   })
 
-  unique_binaries()
+  unique_binaries_HTML()
 }
 
 
-function unique_binaries() {
+function unique_binaries_HTML() {
   var paths = `/usr/lib/x86_64-linux-gnu/lxc/lxc-user-nic
   /usr/lib/eject/dmcrypt-get-device
   /usr/lib/snapd/snap-confine
@@ -157,13 +157,16 @@ function unique_binaries() {
 
   var common_base_paths = ['/bin/', '/usr/', '/sbin/', '/snap/']
   var unique_binary_for_searchsploit = []
+  var unique_binary_for_ltrace_FULLPATH = []
+
 
   var binaries = paths.split('\n').map(path => { return path.split('/').splice(-1)[0].trim() })
     
   var my_paths = document.querySelector('#myinput').value
   
   var my_binaries = my_paths.split('\n').filter(line => { return line != '' })
-  var unique_binaries = my_binaries.map(bin => {
+
+  var unique_binaries_HTML = my_binaries.map(bin => {
     // is base common? 
     let isBaseUncommon = !common_base_paths.reduce((acc, base_path) => { return bin.startsWith(base_path) || acc }, false)
     let isUniqueBinary = !binaries.includes(bin.split('/').splice(-1)[0].trim())
@@ -180,6 +183,8 @@ function unique_binaries() {
     if (isUniqueBinary) {
       val += ' (possibly unique binary)'
       unique_binary_for_searchsploit.push(bin.split('/').splice(-1)[0].trim().replaceAll('-', ' '))
+
+      unique_binary_for_ltrace_FULLPATH.push(bin.trim())
     }
     
     
@@ -187,15 +192,30 @@ function unique_binaries() {
   } )
   
   // print searchsploit cmd to console
-  console.log(`printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; searchsploit {}" | grep -v "No Results"`)
+  let searchsploit_cmd = `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; searchsploit {}" | grep -v "No Results"`
+  let ltrace_cmd = `printf '` + unique_binary_for_ltrace_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; ltrace -o ltrace_output.txt {}; cat ltrace_output.txt | grep -i -e '^' -e system --color=always" `
+
+
+  console.log('Searchsploit cmd:\n', searchsploit_cmd)
+  console.log('ltrace cmd:\n', ltrace_cmd)
+  
+
 
   
-  if (document.getElementById('unique_binaries')) {
-    document.getElementById('unique_binaries').innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries.join('<br>') + '<br><br><h3>Searchsploit cmd to search for unique binaries:</h3>' + `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \\"{}\\"\\n'; searchsploit {}" | grep -v "No Results"`
+  if (document.getElementById('unique_binaries_HTML')) {
+    document.getElementById('unique_binaries_HTML').innerHTML = 
+      '<h1>Possible Unique Binaries</h1>' + 
+      unique_binaries_HTML.join('<br>') + 
+      '<br><br><h3>[ATTACK MACHINE] Searchsploit cmd to search for unique binaries:</h3>' + 
+      `<span style='color:red'>${searchsploit_cmd}</span>` + 
+      '<br><br><h3>[TARGET MACHINE] ltrace unique binaries.:</h3><p>Looking for system() calls with relative paths. "export PATH=/tmp:$PATH" to exploit</p>' + 
+      `<span style='color:red'>${ltrace_cmd}</span>`
+
+
   } else {
     var ele = document.createElement('div')
-    ele.id = 'unique_binaries'
-    ele.innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries.join('<br>')
+    ele.id = 'unique_binaries_HTML'
+    ele.innerHTML = '<h1>Possible Unique Binaries</h1>' + unique_binaries_HTML.join('<br>')
     document.querySelector('#bin-search-wrapper').appendChild(ele)
   }
 
