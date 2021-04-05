@@ -15,5 +15,5 @@
       "js": ["michiganGov.js"]
     }
   ],
-  "permissions": ["activeTab", "https://sosmakeanappointment.as.me/"]
+  "permissions": ["https://district1.as.me/"]
 }

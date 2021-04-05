@@ -1,19 +1,28 @@
 // runs on https://www.michigan.gov/
 
 
-
 var port = chrome.runtime.connect({
   name: "knockknock"
 });
 
-port.onMessage.addListener(function (msg) {
-  console.log(msg.locationDates)
 
-  let arr = msg.locationDates[0]
-  arr = arr.sort((a,b) => { return new Date(a.date) - new Date(b.date)})
-  let text_output = '\nSOONEST APPOINTMENTS ARE ON TOP.\nProceed to make an appointment at these locations.\n\n' + arr.map(ele => { return ele.location + ' :  '  + ele.date }).join('\n')
-  alert(text_output)
-  arr.forEach(obj => { try { document.querySelector('som-bol').shadowRoot.querySelector('[href*="' + decodeURIComponent(obj.location) + '"]').innerText = "Make Appointment (" + obj.date + ")" } catch {} } )
+var loc_dates = []
+
+port.onMessage.addListener(function (msg) {
+
+  console.log(msg)
+
+  
+  // update or add to glboal location/dates array
+  loc_dates.map(ele => { return ele.calID }).includes(msg.calID) ? loc_dates.filter(ele => { return ele.calID === msg.calID }).forEach(ele => { ele.date = msg.date }) : loc_dates.push(msg)
+  // sort newest date on top
+  loc_dates = loc_dates.sort((a,b) => { return new Date(a.date) - new Date(b.date)})
+
+
+  // output summary to top
+  let text_output = '\nSOONEST APPOINTMENTS ARE ON TOP.\nProceed to make an appointment at these locations.\n\n' + loc_dates.map(ele => { return ele.date + ' :  '  + ele.name }).join('\n')
+
+  loc_dates.forEach(obj => { try { document.querySelector('som-bol').shadowRoot.querySelector('[href*="' + decodeURIComponent(obj.name) + '"]').innerText = "Make Appointment (" + obj.date + ")" } catch {} } )
 
   if (document.querySelector('#myOutput')) {
     document.querySelector('#myOutput').innerText = text_output
@@ -22,37 +31,77 @@ port.onMessage.addListener(function (msg) {
     let ele = document.createElement('div')
     ele.id = 'myOutput'
     ele.innerText = text_output
-  
+
     document.querySelector('.page-header').appendChild(ele)
-  
   }
 
 
-  // soonest
-  let soonestLoc = document.querySelector('som-bol').shadowRoot.querySelector('[href*="' + decodeURIComponent(arr[0].location) + '"]').parentNode.parentNode.parentNode.parentNode
+
+  // update "Make Appointment" buttons with dates
+  try { 
+    document.querySelector('som-bol').shadowRoot.querySelector('[href*="' + decodeURIComponent(msg.calID) + '"]').innerText = "Make Appointment (" + msg.date + ")" 
+  } catch {} 
+
+
+    // soonest
+  // reset colors
+  document.querySelector('som-bol').shadowRoot.querySelectorAll('.card').forEach(ele => { ele.style.backgroundColor = "" })
+  // highlight
+  let soonestLoc = document.querySelector('som-bol').shadowRoot.querySelector('[href*="' + decodeURIComponent(loc_dates[0].calID) + '"]').parentNode.parentNode.parentNode.parentNode
   soonestLoc.style.backgroundColor = 'yellow'
-  soonestLoc.scrollIntoView({block: "center"})
+  // soonestLoc.scrollIntoView({block: "center"})
+
 });
 
 
 
 
+// main code
+var num_cards = document.querySelector('som-bol').shadowRoot.querySelectorAll('.card').length
+
+
+
+function RefreshAppointments() {
+  loc_dates = []
+  Array.from(document.querySelector('som-bol').shadowRoot.querySelectorAll('.card')).forEach(ele => {
+    port.postMessage({
+      name: ele.textContent.split(" away")[0].trim(),
+      calID: ele.querySelector('.btn').href.split('=')[1],
+      timeout: 1
+    }); 
+  })
+}
 
 let button = document.createElement('button')
-button.textContent = 'Find soonest appointments'
+button.id = 'refresh-appointments-btn'
+button.style.visibility = 'hidden'
+button.textContent = 'Refresh appointment dates'
 button.onclick = () => {
-  let arr = Array.from(document.querySelector('som-bol').shadowRoot.querySelectorAll('[href*="https://sosmakeanappointment.as.me/schedule.php?location="]')).map(ele => {
-    return ele.href.split('=')[1]
-  })
-
-
-  port.postMessage({
-    locations: arr,
-    timeout: 1
-  });
-
-  alert("Please wait for the response, this may take a minute")
-
+  RefreshAppointments()
 }
 
 document.querySelector('.page-header').appendChild(button)
+
+
+
+
+// main loop
+setInterval(() => {
+  var curr_num_cards = document.querySelector('som-bol').shadowRoot.querySelectorAll('.card').length
+
+  if (curr_num_cards != num_cards) {
+    console.log("CHANGED", curr_num_cards, num_cards)
+    num_cards = curr_num_cards
+    
+    // do stuff
+    if (curr_num_cards != 0) {
+      RefreshAppointments()
+      document.querySelector('#refresh-appointments-btn').style.visibility = 'visible'
+    } else {
+      document.querySelector('#refresh-appointments-btn').style.visibility = 'hidden'
+      if (document.querySelector('#myOutput')) {
+        document.querySelector('#myOutput').innerText = ''
+      }
+    }
+  } 
+}, 250)
