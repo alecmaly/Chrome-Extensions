@@ -20,12 +20,12 @@ port.onMessage.addListener(function (msg) {
 
 
   // output summary to top
-  let text_output = '\nSOONEST APPOINTMENTS ARE ON TOP.\nProceed to make an appointment at these locations.\n\n' + loc_dates.map(ele => { return ele.date + ' :  '  + ele.name }).join('\n')
+  let text_output = '\nSOONEST APPOINTMENTS ARE ON TOP.<br>Proceed to make an appointment at these locations.<br><br>' + loc_dates.map(ele => { return ele.date + ' :  '  + ele.name + ' (<a style="color:blue;text-decoration:underline" target="_blank" href="' + ele.url + '">make appointment</a>)<br>' }).join('\n')
 
   loc_dates.forEach(obj => { try { document.querySelector('som-bol').shadowRoot.querySelector('[href*="' + decodeURIComponent(obj.name) + '"]').innerText = "Make Appointment (" + obj.date + ")" } catch {} } )
 
   if (document.querySelector('#myOutput')) {
-    document.querySelector('#myOutput').innerText = text_output
+    document.querySelector('#myOutput').innerHTML = text_output
   } else {
 
     let ele = document.createElement('div')
@@ -67,6 +67,7 @@ function RefreshAppointments() {
     port.postMessage({
       name: ele.textContent.split(" away")[0].trim(),
       calID: ele.querySelector('.btn').href.split('=')[1],
+      url: ele.querySelector('.btn').href,
       timeout: 1
     }); 
   })

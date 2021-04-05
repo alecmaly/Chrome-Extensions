@@ -151,7 +151,7 @@ chrome.runtime.onConnect.addListener(function (port) {
       })
 
       resp.then(date => { 
-        port.postMessage({ calID: msg.calID, name: msg.name, date: date }) 
+        port.postMessage({ calID: msg.calID, name: msg.name, date: date, url: msg.url }) 
       })
 
 
