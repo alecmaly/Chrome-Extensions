@@ -157,7 +157,7 @@ function unique_binaries_HTML() {
 
   var common_base_paths = ['/bin/', '/usr/', '/sbin/', '/snap/']
   var unique_binary_for_searchsploit = []
-  var unique_binary_for_ltrace_FULLPATH = []
+  var unique_binary_FULLPATH = []
 
 
   var binaries = paths.split('\n').map(path => { return path.split('/').splice(-1)[0].trim() })
@@ -184,7 +184,7 @@ function unique_binaries_HTML() {
       val += ' (possibly unique binary)'
       unique_binary_for_searchsploit.push(bin.split('/').splice(-1)[0].trim().replaceAll('-', ' '))
 
-      unique_binary_for_ltrace_FULLPATH.push(bin.trim())
+      unique_binary_FULLPATH.push(bin.trim())
     }
     
     
@@ -193,12 +193,15 @@ function unique_binaries_HTML() {
   
   // print searchsploit cmd to console
   let searchsploit_cmd = `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; searchsploit {}" | grep -v "No Results"`
-  let ltrace_cmd = `printf '` + unique_binary_for_ltrace_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; ltrace -o ltrace_output.txt {}; cat ltrace_output.txt | grep -i -e '^' -e system --color=always" `
+  let ltrace_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; ltrace -o ltrace_output.txt {}; cat ltrace_output.txt | grep -i -e '^' -e system --color=always" `
+
+  let path_injection_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: "{}" '; echo; strings {} | cut -d' ' -f1 | xargs -P4 -I{l} sh -c 'which {l} 2>/dev/null' | grep -e '.*' --color=always"`
 
 
+  
   console.log('Searchsploit cmd:\n', searchsploit_cmd)
   console.log('ltrace cmd:\n', ltrace_cmd)
-  
+  console.log('path injection cmd:\n', path_injection_cmd)
 
 
   
@@ -209,7 +212,9 @@ function unique_binaries_HTML() {
       '<br><br><h3>[ATTACK MACHINE] Searchsploit cmd to search for unique binaries:</h3>' + 
       `<span style='color:red'>${searchsploit_cmd}</span>` + 
       '<br><br><h3>[TARGET MACHINE] ltrace unique binaries.:</h3><p>Looking for system() calls with relative paths. "export PATH=/tmp:$PATH" to exploit</p>' + 
-      `<span style='color:red'>${ltrace_cmd}</span>`
+      `<span style='color:red'>${ltrace_cmd}</span>` + 
+      '<br><br><h3>[TARGET MACHINE] possible path injection unique binaries.:</h3><p>Looking for possible path injections, relative binary paths. "export PATH=/tmp:$PATH" to exploit</p>' + 
+      `<span style='color:red'>${path_injection_cmd}</span>`
 
 
   } else {
