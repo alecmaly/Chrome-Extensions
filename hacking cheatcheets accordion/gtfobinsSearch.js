@@ -195,7 +195,7 @@ function unique_binaries_HTML() {
   let searchsploit_cmd = `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; searchsploit {}" | grep -v "No Results"`
   let ltrace_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; ltrace -o ltrace_output.txt {}; cat ltrace_output.txt | grep -i -e '^' -e system --color=always" `
 
-  let path_injection_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'BINARY: "{}" '; echo; strings {} | cut -d' ' -f1 | xargs -P4 -I{l} sh -c 'tmp=\\$(which "{l}"); if [ ! -z "\\$tmp" ]; then echo BIN STR: {l}; echo "\\$tmp";echo; fi' | grep -e '.*' --color=always"`
+  let path_injection_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'BINARY: "{}" '; echo; strings -n 2 {} | cut -d' ' -f1 | xargs -P4 -I{l} sh -c 'tmp=\\$(which "{l}"); if [ ! -z "\\$tmp" ]; then echo POSSIBLE BIN STR: {l}; echo "\\$tmp";echo; fi' | grep -e '.*' --color=always"`
 
 
   
