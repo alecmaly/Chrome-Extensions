@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "GTFOBins Extension",
+  "description": "Add functionality to gtfobins.github.io",
+  "version": "2.1.2",
+  "author": "Alec M",
+  "content_scripts": [
+    {
+      "matches": ["*://*.gtfobins.github.io/*"],
+      "js": ["gtfobinsSearch.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": []
+}
