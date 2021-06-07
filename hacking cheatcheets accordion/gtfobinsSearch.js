@@ -201,7 +201,7 @@ function unique_binaries_HTML() {
   // let strings_split_space = false
   // let strings_split_space_cmd = strings_split_space ? `tr ' ' '\\n' | awk '{\$1=\$1;print}'` : `cut -d' ' -f1` 
   
-  let path_injection_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'BINARY: "{}" '; echo; strings -n 2 {} | cut -d' ' -f1 | xargs -P4 -I{l} sh -c 'tmp=\\$(which "{l}" 2>dev/null); if [ ! -z "\\$tmp" ]; then echo POSSIBLE BIN STR: {l}; echo "\\$tmp";echo; fi' 2>dev/null | grep -e '.*' --color=always" 2>/dev/null`
+  let path_injection_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'BINARY: "{}" '; echo; strings -n 2 {} | cut -d' ' -f1 | xargs -P4 -I{l} sh -c 'tmp=\\$(which "{l}" 2>/dev/null); if [ ! -z "\\$tmp" ]; then echo POSSIBLE BIN STR: {l}; echo "\\$tmp";echo; fi' 2>/dev/null | grep -e '.*' --color=always" `
   
   // path injection, splitting on spaces to newline
   // let path_injection_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'BINARY: "{}" '; echo; strings -n 2 {} | tr ' ' '\\n' | xargs -P4 -I{l} sh -c 'tmp=\\$(which "{l}" 2>dev/null); if [ ! -z "\\$tmp" ]; then echo POSSIBLE BIN STR: {l}; echo "\\$tmp";echo; fi' 2>dev/null | grep -e '.*' --color=always"`
