@@ -26,6 +26,11 @@
       "matches": ["*://*.lolbas-project.github.io/*"],
       "js": ["lolbas.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://portswigger.net/web-security/cross-site-scripting/cheat-sheet/*"],
+      "js": ["portswigger-xss-cheatsheet.js"],
+      "run_at": "document_idle"
     }      
 
 
