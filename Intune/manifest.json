@@ -1,0 +1,19 @@
+
+{
+  "manifest_version": 3,
+  "name": "Intercept Intune Stuff",
+  "description": "Intercept Intune Stuff",
+  "version": "1.0.0",
+  "author": "Alec Maly",
+  "content_scripts": [
+    {
+      "matches": ["*://endpoint.microsoft.com/*"],
+      "run_at": "document_start",
+      "js": ["xhook.min.js", "script.js"]
+    }
+  ],
+  "homepage_url": "https://portal.azure.com/",
+  "host_permissions": [
+    "*://endpoint.microsoft.com/*"
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Alec's Hacking Accordion",
   "description": "Accordion",
   "version": "2.1.2",
@@ -31,7 +31,12 @@
       "matches": ["*://portswigger.net/web-security/cross-site-scripting/cheat-sheet/*"],
       "js": ["portswigger-xss-cheatsheet.js"],
       "run_at": "document_idle"
-    }      
+    },
+    {
+      "matches": ["*://app.interactsh.com/*"],
+      "js": ["interactsh.js"],
+      "run_at": "document_idle"
+    }
 
 
     
