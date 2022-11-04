@@ -1,13 +1,13 @@
 
 {
   "manifest_version": 3,
-  "name": "ServiceNow Demand Task Helper",
-  "description": "Assist in updating Demand tasks",
+  "name": "Google Maps Route Optimizer",
+  "description": "Assist in optimizing routes with multiple destinations",
   "version": "1.0.0",
   "author": "Alec Maly",
   "content_scripts": [
     {
-      "matches": ["*://dteenergyprod.service-now.com/*"],
+      "matches": ["*://*.google.com/maps/*"],
       "js": ["inject.js"],
       "run_at": "document_end" 
     }
@@ -15,10 +15,10 @@
   "web_accessible_resources": [
     {
       "resources": ["payload.js"],
-      "matches": ["*://dteenergyprod.service-now.com/*"]
+      "matches": ["*://*.google.com/*"]
     }
   ],
-  "homepage_url": "https://dteenergyprod.service-now.com/",
+  "homepage_url": "https://maps.google.com/",
   "permissions": [
     "activeTab"
   ]
