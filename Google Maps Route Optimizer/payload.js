@@ -1,39 +1,6 @@
-// console.log(Array.from(document.querySelectorAll('a[href*="goo.gl"]')).map(ele=>{return ele.innerText + ', Michigan'}).join('\n'))
-
-
-
-// 20064 Chesterbrook Drive, Macomb Township, Michigan
-// 23626 Demley Drive, Clinton Township, Michigan
-// 20795 Balinski Drive, Clinton Township, Michigan
-// 42580 Shulock Drive, Clinton Township, Michigan
-// 38114 Suburban, Clinton Township, Michigan
-// 300 Esplanade St. Mount Clemens, Michigan
-// 49279 Clinton Terrace Drive, Macomb Township, Michigan
-
-// 42523 D’Harte Court, Clinton Township, Michigan
-// 47971 Feral Drive, Macomb Township, Michigan
-// 210 Riverside Drive, Mount Clemens, Michigan
-// 241309 Rugosa Drive, Clinton Township, Michigan
-// 41845 Merrimac Circle, Clinton Township, Michigan
-// 19766 Woodward Ave., Clinton Township, Michigan
-// 54 High St., Mount Clemens, Michigan
-// 42316 Shulock Drive, Clinton Township, Michigan
-// 23103 King Drive, Clinton Township, Michigan
-// 814 Huntington St., Mount Clemens, Michigan
-// 18072 N. Oak Drive, Clinton Township, Michigan
-// 20844 Moyer Drive, Clinton Township, Michigan
-// 42527 Kollmorgen, Clinton Township, Michigan
-// 25208 Saint Christopher, Harrison Township, Michigan
-// 23121 Katzman St., Clinton Township, Michigan
-// 50457 Victoria Place, Macomb Township, Michigan
-// 23654 Whitley, Clinton Township, Michigan
-// 39015 Lakeshore Drive, Harrison Township, Michigan
-
-
 async function CheckTravelTime(addr1, addr2) {
     // function expects encodeURIComponent addr1 + addr2
     try {
-        // let uri = `https://www.google.com/maps/dir/20064+Chesterbrook+Dr,+Macomb,+MI+48044/39015+Lakeshore+Dr,+Harrison+Twp,+MI+48045/`    
         let uri = `https://www.google.com/maps/dir/${encodeURIComponent(addr1)}/${encodeURIComponent(addr2)}`
 
         var html = await fetch(uri).then(resp => { return resp.text() })
@@ -44,7 +11,7 @@ async function CheckTravelTime(addr1, addr2) {
         el.innerHTML = html
 
         // extract hours / minutes for route
-        let distance_str = html.match(/(?<=")[^""]*?\d (hr|min)/g)[1]  // picked a random index, hopefully it doesn't break?
+        let distance_str = html.match(/(?<=")[^""]*?\d (hr|min)/g)[1]  // picked a random index (MAGIC VALUE), try other indexes if 
         let minutes = distance_str.match(/(\d*) min/) ? parseInt(distance_str.match(/(\d*) min/)[1]) : 0
         let hours = distance_str.match(/(\d*) hr/) ? parseInt(distance_str.match(/(\d*) hr/)[1]) : 0
 
@@ -66,8 +33,26 @@ function GenerateButton() {
     return btn
 }
 
+function GetAddressesFromUrl() {
+    let addresses_from_url = window.location.pathname
+        .replace(/\/maps\/?(dir\/)?/, '')
+        .split(/[@\?]/g)[0] // remove parameters
+        .split('/')
+        .map(addr => { return decodeURIComponent(addr).replace(/\+/g, " ").trim() })
+        .join('\n')
+        
+    return addresses_from_url ? addresses_from_url : `Belle Isle Aquarium, Detroit, MI, USA
+    Michigan Central Station, Detroit, MI, USA
+    The RiverWalk, Detroit, MI, USA
+    Motown Museum, Detroit, MI, USA
+    Heidelberg Project, Detroit, MI, USA
+    The Fisher Building, Detroit, MI, USA`.replace(/\n\s*/g,'\n')
+}
+
 async function main() {
-    let anchor = document.querySelector('#omnibox-singlebox')
+    // document.body.appendChild(btn)
+    // attach to screen, may break when HTML changes.
+    let anchor = document.querySelector('#omnibox-singlebox')   
 
     while(!anchor) {
         await new Promise(r => setTimeout(r, 500));
@@ -94,13 +79,13 @@ async function main() {
     }
     container.appendChild(btn)
 
-
+    
     // btn: Go
     var btn = GenerateButton()
     btn.innerText = "Go"
     btn.onclick = async () => {    
         // navigate to location
-        window.location.href = "https://www.google.com/maps/dir/" + document.querySelector('#all-destinations').value.split('\n').map(addr => { return encodeURIComponent(addr) }).join('/')
+        window.location.href = "https://www.google.com/maps/dir/" + document.querySelector('#all-destinations').value.split('\n').map(addr => { return encodeURIComponent(addr).trim() }).join('/')
     }
     container.appendChild(btn)
 
@@ -108,40 +93,51 @@ async function main() {
     // btn: Optimize & Go
     var btn = GenerateButton()
     btn.innerText = "Optimize & Go"
+    btn.id = "optimize-and-go"
     btn.onclick = async () => {
-        route = []
-        let addresses = document.querySelector('#all-destinations').value  
-        // normalize to valid addresses
-        start_address = addresses.split('\n')[0]
-        route.push(start_address)
-        addressesToRoute = addresses.split('\n').slice(1)
+        // return immediately if optimization is running
+        if (window.optimizationRunning) return
+        window.optimizationRunning = true
 
-        while (addressesToRoute.length > 0) {
-            let shortest_path = null
+        try {
+            document.querySelector('#route-optimizer-output').innerText = `Starting route optimization, this may take a while...`
             
-            let promises = []
-            for (let addr of addressesToRoute) {
-                promises.push(CheckTravelTime(route.at(-1), addr))
+            route = []
+            let addresses = document.querySelector('#all-destinations').value  
+            // normalize to valid addresses
+            start_address = addresses.split('\n')[0]
+            route.push(start_address)
+            addressesToRoute = addresses.split('\n').slice(1)
+
+            while (addressesToRoute.length > 0) {
+                let shortest_path = null
+                
+                let promises = []
+                for (let addr of addressesToRoute) {
+                    promises.push(CheckTravelTime(route.at(-1), addr))
+                }
+                
+                let results = await Promise.all(promises)
+                // find shortest path node by total_minutes
+                shortest_path = results.sort((a, b) => { return parseInt(a.total_minutes) - parseInt(b.total_minutes) })[0] 
+                console.log("Shortest Path Obj: ", shortest_path)
+
+                // add shortest path to route
+                route.push(shortest_path.to)
+                addressesToRoute = addressesToRoute.filter(addr => { return addr != shortest_path.to })
+                
+                console.log(`Stops left to analyze: ${addressesToRoute.length}`)
+                document.querySelector('#route-optimizer-output').innerText = `Stops left to analyze: ${addressesToRoute.length}`
             }
-            
-            let results = await Promise.all(promises)
-            // find shortest path node by total_minutes
-            shortest_path = results.sort((a, b) => { return parseInt(a.total_minutes) - parseInt(b.total_minutes) })[0] 
-            console.log("Shortest Path Obj: ", shortest_path)
 
-            // add shortest path to route
-            route.push(shortest_path.to)
-            addressesToRoute = addressesToRoute.filter(addr => { return addr != shortest_path.to })
+
+            console.log('route is:', "https://www.google.com/maps/dir/" + route.map(addr => { return encodeURIComponent(addr).trim() }).join('/')    )
             
-            console.log(`Stops left to analyze: ${addressesToRoute.length}`)
-            document.querySelector('#route-optimizer-output').innerText = `Stops left to analyze: ${addressesToRoute.length}`
+            // navigate to location
+            window.location.href = "https://www.google.com/maps/dir/" + route.map(addr => { return encodeURIComponent(addr).trim() }).join('/')
+        } catch {
+            window.optimizationRunning = false
         }
-
-
-        console.log('route is:', "https://www.google.com/maps/dir/" + route.map(addr => { return encodeURIComponent(addr) }).join('/')    )
-        
-        // navigate to location
-        window.location.href = "https://www.google.com/maps/dir/" + route.map(addr => { return encodeURIComponent(addr) }).join('/')
     }
     container.appendChild(btn)
 
@@ -155,21 +151,12 @@ async function main() {
     container.appendChild(span)
 
 
-
     // add linebreak
     let linebreak = document.createElement('br')
     container.appendChild(linebreak)
 
+
     // create textarea input
-    let addresses_from_url = window.location.pathname
-        .replace(/\/maps\/?(dir\/)?/, '')
-        .split(/[@\?]/g)[0] // remove parameters
-        .split('/')
-        .map(addr => { return decodeURIComponent(addr).replace(/\+/g, " ").trim() })
-        .join('\n')
-
-        // window.location.pathname.replace(/\/maps\/?(dir\/)?/, '')
-
     var input = document.createElement('textarea')
     input.id = "all-destinations"
     input.style.padding = "10px"
@@ -177,18 +164,10 @@ async function main() {
     input.style.width = "750px"
     input.style.border = "1px solid black"
     input.placeholder = "Input addresses here, one line at a time.."
-    input.value = addresses_from_url ? addresses_from_url : `23626 Demley Drive, Clinton Township, Michigan
-20795 Balinski Drive, Clinton Township, Michigan
-49279 Clinton Terrace Drive, Macomb Township, Michigan
-42580 Shulock Drive, Clinton Township, Michigan
-38114 Suburban, Clinton Township, Michigan
-300 Esplanade St. Mount Clemens, Michigan
-20064 Chesterbrook Drive, Macomb Township, Michigan`
+    let addresses_from_url = GetAddressesFromUrl()
+    input.value = addresses_from_url
 
     container.appendChild(input)
-
-
-
 
 
     // btn: Route Optimizer
@@ -197,6 +176,9 @@ async function main() {
     btn.innerText = "Route Optimizer"
 
     btn.onclick = (evt) => {
+        let addresses_from_url = GetAddressesFromUrl()
+        document.querySelector('#all-destinations').value = addresses_from_url
+
         let ele = document.querySelector('#route-optimizer-container')
         // // move window to mouse
         // ele.style.left = `${evt.clientX}px`
@@ -204,13 +186,9 @@ async function main() {
         ele.style.left = `25px`
         ele.style.top = `25px`
 
-        // window.location.href = "https://www.google.com/maps/dir/" + document.querySelector('#all-destinations').value.split('\n').map(addr => { return encodeURIComponent(addr) }).join('/')
         ele.style.display == 'none' ? ele.style.display = 'block' : ele.style.display = 'none' 
     }
 
-    // document.body.appendChild(btn)
-    // attach to screen, may break when ID changes.
-    // document.querySelector('#omnibox-singlebox').appendChild(btn) 
     anchor.appendChild(btn) 
 }
 
