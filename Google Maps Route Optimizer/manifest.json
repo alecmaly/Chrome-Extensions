@@ -3,7 +3,7 @@
   "manifest_version": 3,
   "name": "Google Maps Route Optimizer",
   "description": "Assist in optimizing routes (based on time, not distance) with multiple destinations.",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": "Alec Maly",
   "content_scripts": [
     {
