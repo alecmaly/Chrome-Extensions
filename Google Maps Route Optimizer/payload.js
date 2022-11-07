@@ -98,14 +98,11 @@ function BuildStartLocationIndexDOM() {
         ele.value = i
         ele.style.borderRadius = '25px'
         ele.style.cursor = "pointer"
-        ele.style.backgroundColor = window.startDestinationIndex == i ? 'red' : 'inherit'
-        console.log(window.startDestinationIndex, i)
+        ele.style.backgroundColor = window.startDestinationIndex == i ? 'royalblue' : 'inherit'
         ele.onmousedown = (evt) => {
             let clicked_index = evt.target.value
             // reset colors
-            Array.from(document.querySelector('#select-location').children).forEach(ele => { ele.style.backgroundColor = 'inherit'})
-            evt.target.style.backgroundColor = 'red'
-            console.log(clicked_index)
+            Array.from(document.querySelector('#select-location').children).forEach((ele, i) => { i <= clicked_index ? ele.style.backgroundColor = 'royalblue' :  ele.style.backgroundColor = 'inherit' })
             window.startDestinationIndex = clicked_index
             // BuildStartLocationIndexDOM()
         }
@@ -168,10 +165,22 @@ async function main() {
     btn.innerText = "Optimize & Go"
     btn.id = "optimize-and-go"
     btn.onclick = async () => {
-        // return immediately if optimization is running
-        if (window.optimizationRunning) return
-        window.optimizationRunning = true
+        let OptimizeAndGoButton = document.querySelector('#optimize-and-go')
         
+        if (window.optimizationRunning) {
+            // cancel button clicked! 
+            // update GUI state & return immediately if optimization is running
+            window.optimizationRunning = false
+            document.querySelector('#route-optimizer-output').innerText = ''
+            OptimizeAndGoButton.innerText = "Optimize & Go" // update button
+            return
+        } else {
+            // start optimization, update button to a cancel button
+            OptimizeAndGoButton.innerText = "Cancel" // update button
+            OptimizeAndGoButton.style.backgroundColor = 'indianred'
+            window.optimizationRunning = true
+        }
+
         try {
             route = []
             document.querySelector('#route-optimizer-output').innerText = `Starting route optimization, this may take a while...`
@@ -206,6 +215,8 @@ async function main() {
                 route.push(shortest_path.to)
                 addressesToRoute = addressesToRoute.filter(addr => { return addr != shortest_path.to })
                 
+
+                if (!window.optimizationRunning) return // return if scan was cancelled
                 console.log(`Stops left to analyze: ${addressesToRoute.length}`)
                 document.querySelector('#route-optimizer-output').innerText = `Stops left to analyze: ${addressesToRoute.length}`
             }
@@ -236,9 +247,10 @@ async function main() {
 
     // add linebreak
     let msg_span = document.createElement('span')
-    msg_span.style.color = 'red'
+    msg_span.style.color = 'royalblue'
+    msg_span.style.fontWeight = "600"
     msg_span.style.paddingLeft = '5px'
-    msg_span.innerText = "** Optimization starts from SELECTED address # **"
+    msg_span.innerText = "** Optimization starts AFTER selected addresss. Selected addresses = FROZEN **"
     container.appendChild(msg_span)
 
     // add linebreak
