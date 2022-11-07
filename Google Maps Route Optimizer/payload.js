@@ -49,7 +49,76 @@ function GetAddressesFromUrl() {
     The Fisher Building, Detroit, MI, USA`.replace(/\n\s*/g,'\n')
 }
 
+function SetGlobalStyles() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #select-location {
+            -ms-overflow-style: none; /* for Internet Explorer, Edge */
+            scrollbar-width: none; /* for Firefox */
+            overflow-y: scroll; 
+        }
+        
+        #select-location::-webkit-scrollbar {
+            display: none; /* for Chrome, Safari, and Opera */
+        }
+        `;
+    document.head.appendChild(style);
+}
+
+function SyncLocationColumnsFrom(mirrorFrom) {
+    let select_location = document.querySelector('#select-location')
+    let all_destinations = document.querySelector('#all-destinations')
+
+    switch (mirrorFrom) {
+        case 'select-location':
+            // sync scroll
+            all_destinations.scrollTo(0, select_location.scrollTop)
+        break;
+        case 'all-destinations':
+            // sync height
+            select_location.style.height = all_destinations.clientHeight + 'px'
+            // sync scroll
+            select_location.scrollTo(0, all_destinations.scrollTop)
+        break;
+        
+    }
+}
+
+function BuildStartLocationIndexDOM() {
+    let linebreak = document.createElement('br')
+    window.startDestinationIndex = window.startDestinationIndex || 0
+    let select_location = document.querySelector('#select-location')
+    let addresses = document.querySelector('#all-destinations').value.split('\n') 
+    select_location.innerHTML = ''
+
+    for (let i = 0; i < addresses.length; i++) {
+        let ele = document.createElement('span')
+        ele.id = `destination-index-${i}`
+        ele.innerHTML = `${i}.<br>`
+        ele.value = i
+        ele.style.borderRadius = '25px'
+        ele.style.cursor = "pointer"
+        ele.style.backgroundColor = window.startDestinationIndex == i ? 'red' : 'inherit'
+        console.log(window.startDestinationIndex, i)
+        ele.onmousedown = (evt) => {
+            let clicked_index = evt.target.value
+            // reset colors
+            Array.from(document.querySelector('#select-location').children).forEach(ele => { ele.style.backgroundColor = 'inherit'})
+            evt.target.style.backgroundColor = 'red'
+            console.log(clicked_index)
+            window.startDestinationIndex = clicked_index
+            // BuildStartLocationIndexDOM()
+        }
+        select_location.appendChild(ele)
+    }
+
+    for (let i = 0; i <=3; i++)
+        select_location.appendChild(linebreak)
+}
+// BuildStartLocationIndexDOM()
+
 async function main() {
+    SetGlobalStyles()
     // document.body.appendChild(btn)
     // attach to screen, may break when HTML changes.
     let anchor = document.querySelector('#omnibox-singlebox')   
@@ -85,7 +154,11 @@ async function main() {
     btn.innerText = "Go"
     btn.onclick = async () => {    
         // navigate to location
-        window.location.href = "https://www.google.com/maps/dir/" + document.querySelector('#all-destinations').value.split('\n').map(addr => { return encodeURIComponent(addr).trim() }).join('/')
+        window.location.href = "https://www.google.com/maps/dir/" + document.querySelector('#all-destinations').value
+            .split('\n')
+            .filter(addr => { return addr.trim() != '' })
+            .map(addr => { return encodeURIComponent(addr).trim() })
+            .join('/')
     }
     container.appendChild(btn)
 
@@ -98,16 +171,23 @@ async function main() {
         // return immediately if optimization is running
         if (window.optimizationRunning) return
         window.optimizationRunning = true
-
+        
         try {
+            route = []
             document.querySelector('#route-optimizer-output').innerText = `Starting route optimization, this may take a while...`
             
-            route = []
-            let addresses = document.querySelector('#all-destinations').value  
-            // normalize to valid addresses
-            start_address = addresses.split('\n')[0]
-            route.push(start_address)
-            addressesToRoute = addresses.split('\n').slice(1)
+            // collect addresses 
+            let addresses = document.querySelector('#all-destinations').value 
+                                .split('\n')
+                                .map(addr => { return addr.trim() })
+                                .filter(addr => { return addr != '' })
+
+
+            // TODO: Optimization / QOL Enhancnement - normalize to valid addresses??
+
+            route = addresses.slice(0, window.startDestinationIndex + 1)
+            addressesToRoute = addresses.slice(window.startDestinationIndex + 1)
+            
 
             while (addressesToRoute.length > 0) {
                 let shortest_path = null
@@ -150,14 +230,39 @@ async function main() {
     span.style.margin = '5px'
     container.appendChild(span)
 
-
     // add linebreak
-    let linebreak = document.createElement('br')
+    var linebreak = document.createElement('br')
     container.appendChild(linebreak)
 
+    // add linebreak
+    let msg_span = document.createElement('span')
+    msg_span.style.color = 'red'
+    msg_span.style.paddingLeft = '5px'
+    msg_span.innerText = "** Optimization starts from SELECTED address # **"
+    container.appendChild(msg_span)
+
+    // add linebreak
+    linebreak = document.createElement('br')
+    container.appendChild(linebreak)
+
+    // container for locations
+    var container_locations = document.createElement('div')
+    container_locations.style.display = 'flex'
+    container.appendChild(container_locations)
+
+    // select location
+    var select_location = document.createElement('div')
+    select_location.id = "select-location"
+    select_location.style.flex = .5
+    select_location.style.textAlign = "center"
+    select_location.style.paddingTop = '10px'
+    select_location.style.overflowY = 'scroll'
+    select_location.onscroll = (evt) => { console.log(evt); SyncLocationColumnsFrom('select-location') }
+    container_locations.appendChild(select_location)
 
     // create textarea input
     var input = document.createElement('textarea')
+    input.style.flex = 10
     input.id = "all-destinations"
     input.style.padding = "10px"
     input.style.height = "500px"
@@ -166,8 +271,11 @@ async function main() {
     input.placeholder = "Input addresses here, one line at a time.."
     let addresses_from_url = GetAddressesFromUrl()
     input.value = addresses_from_url
+    input.onkeyup = () => { BuildStartLocationIndexDOM() }
+    input.onscroll = () => { SyncLocationColumnsFrom('all-destinations') }
+    input.onmouseup = () => { SyncLocationColumnsFrom('all-destinations') }
 
-    container.appendChild(input)
+    container_locations.appendChild(input)
 
 
     // btn: Route Optimizer
@@ -187,9 +295,15 @@ async function main() {
         ele.style.top = `25px`
 
         ele.style.display == 'none' ? ele.style.display = 'block' : ele.style.display = 'none' 
+
+        BuildStartLocationIndexDOM()
     }
 
     anchor.appendChild(btn) 
 }
 
 main()
+
+
+
+
