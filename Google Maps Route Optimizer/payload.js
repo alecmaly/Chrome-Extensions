@@ -98,7 +98,7 @@ function BuildStartLocationIndexDOM() {
         ele.value = i
         ele.style.borderRadius = '25px'
         ele.style.cursor = "pointer"
-        ele.style.backgroundColor = window.startDestinationIndex == i ? 'royalblue' : 'inherit'
+        ele.style.backgroundColor = i <= window.startDestinationIndex ? 'royalblue' : 'inherit'
         ele.onmousedown = (evt) => {
             let clicked_index = evt.target.value
             // reset colors
@@ -108,6 +108,7 @@ function BuildStartLocationIndexDOM() {
         }
         select_location.appendChild(ele)
     }
+    
 
     for (let i = 0; i <=3; i++)
         select_location.appendChild(linebreak)
@@ -173,6 +174,7 @@ async function main() {
             window.optimizationRunning = false
             document.querySelector('#route-optimizer-output').innerText = ''
             OptimizeAndGoButton.innerText = "Optimize & Go" // update button
+            OptimizeAndGoButton.style.backgroundColor = 'grey'
             return
         } else {
             // start optimization, update button to a cancel button
