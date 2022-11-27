@@ -160,6 +160,17 @@ async function main() {
     }
     container.appendChild(btn)
 
+    
+    var btn = GenerateButton()
+    btn.innerText = "QR"
+    btn.onclick = () => {
+        var a = document.createElement('a')
+        a.href = "http://chart.apis.google.com/chart?cht=qr&chs=300x300&chl=" + encodeURIComponent(window.location.href)
+        a.target = "_blank"
+        a.click()
+    }
+    container.appendChild(btn)
+
 
     // btn: Optimize & Go
     var btn = GenerateButton()
@@ -185,7 +196,7 @@ async function main() {
 
         try {
             route = []
-            document.querySelector('#route-optimizer-output').innerText = `Starting route optimization, this may take a while...`
+            document.querySelector('#route-optimizer-output').innerHTML = `Starting route optimization.`
             
             // collect addresses 
             let addresses = document.querySelector('#all-destinations').value 
