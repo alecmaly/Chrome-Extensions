@@ -120,6 +120,7 @@ async function main() {
     // document.body.appendChild(btn)
     // attach to screen, may break when HTML changes.
     let anchor = document.querySelector('#omnibox-singlebox')   
+    anchor.style.width = '0px'
 
     while(!anchor) {
         await new Promise(r => setTimeout(r, 500));
@@ -305,7 +306,8 @@ async function main() {
 
     // btn: Route Optimizer
     var btn = GenerateButton()
-    btn.style.marginLeft = "75px"
+    btn.style.left = "75px"
+    btn.style.position = "relative"
     btn.innerText = "Route Optimizer"
 
     btn.onclick = (evt) => {
