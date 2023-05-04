@@ -1,0 +1,21 @@
+
+{
+  "manifest_version": 3,
+  "name": "Dump Session Storage + Cookies",
+  "description": "Dumps session storage and looks for refresh (0.) + access tokens (eyJ).",
+  "version": "1.0.1",
+  "author": "Alec Maly",
+  "content_scripts": [
+    {
+      "matches": ["*://*.powerapps.com/*"],
+      "js": ["inject.js"],
+      "run_at": "document_end" 
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["payload.js"],
+      "matches": ["*://*.powerapps.com/*"]
+    }
+  ]
+}
