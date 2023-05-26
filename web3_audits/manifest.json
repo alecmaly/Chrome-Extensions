@@ -29,6 +29,11 @@
       "matches": ["*://*.github.com/*/*/commit/*"],
       "js": ["githubCommitPageTools.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.github.com/code-423n4/*-findings/*"],
+      "js": ["githubCode4renaIssueDuplicates.js"],
+      "run_at": "document_idle"
     }
   ],
   "permissions": []
