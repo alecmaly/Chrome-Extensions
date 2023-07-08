@@ -29,7 +29,7 @@ setInterval(() => {
 
     commits.forEach(async commit => {
     
-        let link = commit.querySelector('[aria-label="View commit details"]').href
+        let link = commit.querySelector('[id^="commit-details"]').href
     
         let html = await fetch(link).then(resp => { return resp.text() }).then(html => { return html })
         let e = document.createElement('div')
