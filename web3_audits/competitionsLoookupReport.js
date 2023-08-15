@@ -34,7 +34,7 @@
                         foundByCount: foundByCount
                     })
             } catch {
-                console.log("Error on: ", finding)
+                console.error("Error on: ", finding)
             }
         })
         return findings
@@ -49,15 +49,17 @@
     let container = document.createElement('div')
     container.innerHTML = html
 
-    let competetors = document.querySelectorAll('.leaderboard__competitor')
+    let competitors = document.querySelectorAll('.leaderboard__competitor')
 
-    Array.from(competetors).slice(0, 20).forEach(competator => {
+    Array.from(competitors).slice(0, 20).forEach(competitor => {
         try {
-            let username = competator.querySelector('.leaderboard-handle__name') ? competator.querySelector('.leaderboard-handle__name').innerText : competator.querySelector('.team-name').querySelector('span').innerText
+            let username = competitor.querySelector('.leaderboard-handle__name') ? competitor.querySelector('.leaderboard-handle__name').innerText : competitor.querySelector('.team-name').querySelector('span').innerText
             let findings = getFindingsForUser(username)
             for (let finding of findings) {
-                competator.parentElement.insertAdjacentHTML("beforebegin", `<a target="_blank" href='${finding.href}'>(${finding.foundByCount}) ${finding.title}</a><br>`)
+                competitor.parentElement.insertAdjacentHTML("beforebegin", `<a target="_blank" href='${finding.href}'>(${finding.foundByCount}) ${finding.title}</a><br>`)
             }
-        } catch {}
+        } catch (e) {
+            console.error(e)
+        }
     })
 })();

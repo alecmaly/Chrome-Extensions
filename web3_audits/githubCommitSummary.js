@@ -7,7 +7,6 @@
     - highlight interesting filetypes
 */
 
-
 function getExtensionCounts(filenames) {
     let extensions = {};
     for (const filename of filenames) {

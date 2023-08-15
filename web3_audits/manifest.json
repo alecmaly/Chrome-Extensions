@@ -5,13 +5,14 @@
   "version": "2.1.2",
   "author": "Alec M",
   "content_scripts": [
+    
     {
-      "matches": ["*://*.code4rena.com/contests/"],
-      "js": ["competitionHasReport.js"],
+      "matches": ["*://*.code4rena.com/reports"],
+      "js": ["code4renaReportsContestLookup.js"],
       "run_at": "document_idle"
     },
     {
-      "matches": ["*://*.code4rena.com/contests/*"],
+      "matches": ["*://code4rena.com/contests/*"],
       "js": ["competitionsLoookupReport.js"],
       "run_at": "document_idle"
     },
