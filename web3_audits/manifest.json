@@ -32,10 +32,15 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["*://*.github.com/code-423n4/*-findings/*"],
+      "matches": ["*://*.github.com/code-423n4/*-findings/issues*"],
       "js": ["githubCode4renaIssueDuplicates.js"],
       "run_at": "document_idle"
-    }
+    },
+    {
+      "matches": ["*://*.github.com/code-423n4/*-findings/tree/main/data"],
+      "js": ["githubCode4renaWardenSubmissions.js"],
+      "run_at": "document_idle"
+    }    
   ],
   "permissions": []
 }

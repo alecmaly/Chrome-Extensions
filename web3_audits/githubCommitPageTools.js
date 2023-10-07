@@ -12,6 +12,7 @@
     }
 
     function setStickyHeaders() {
+        let files = Array.from(document.querySelectorAll('.file-header')).filter(row => { return row.checkVisibility() });
         let lastVisibleIndex = files.length - 1;
         
         function updateLastVisibleElement() {
