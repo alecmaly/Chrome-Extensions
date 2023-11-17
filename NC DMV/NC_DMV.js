@@ -82,14 +82,14 @@ async function getFirstAppointments() {
 
     data_output.innerHTML = ""
     for (let row of data) {
-        data_output.insertAdjacentHTML('beforeend', `${row.first_date} (${row.miles} miles) - <span style='color:red; cursor: pointer' onclick='click_dataId(${row.data_id})'>${row.name}</span> - <a target='_blank' href='https://www.google.com/maps?saddr=My+Location&daddr=${row.address}'>${row.address}</a><br>`)
+        data_output.insertAdjacentHTML('beforeend', `${row.first_date} (${row.miles} miles) - <span style='color:red; cursor: pointer' onclick='document.querySelector(\`[data-id="${row.data_id}"]\`).click()'>${row.name}</span> - <a target='_blank' href='https://www.google.com/maps?saddr=My+Location&daddr=${row.address}'>${row.address}</a><br>`)
     }
 
 }
 
-function click_dataId(data_id) {
-    document.querySelector(`[data-id="${data_id}"]`).click()
-}
+// window.click_dataId = (data_id) => {
+//     document.querySelector(`[data-id="${data_id}"]`).click()
+// }
 
 // output
 let title = document.querySelector('.step-title')

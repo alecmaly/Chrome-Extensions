@@ -122,6 +122,21 @@
 
 
     
+
+    // scroll to ele
+    const params = new URLSearchParams(window.location.search);
+    const scroll_to_filename = params.get('scroll_to'); // gets 'value1'
+    if (scroll_to_filename) {
+        await waitForElementToDisplay(`[title='${scroll_to_filename}']`)
+        let ele = document.querySelector(`[title='${scroll_to_filename}']`)
+        ele.scrollIntoView()
+        ele.style.backgroundColor = 'yellow'
+    }
+
+
+
+
+
     // // click btns
     // setTimeout(() => {
     //     document.querySelector('#apply_filters_btn').click()
