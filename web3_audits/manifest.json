@@ -12,6 +12,11 @@
       "run_at": "document_idle"
     },
     {
+      "matches": ["*://*.code4rena.com/reports/*"],
+      "js": ["code4renaReport.js"],
+      "run_at": "document_idle"
+    },
+    {
       "matches": ["*://code4rena.com/contests/*"],
       "js": ["competitionsLoookupReport.js"],
       "run_at": "document_idle"
