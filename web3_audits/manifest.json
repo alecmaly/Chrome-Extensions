@@ -4,8 +4,12 @@
   "description": "Add functionality to code4rena.com / solodit.xyz to improve experiennce",
   "version": "2.1.2",
   "author": "Alec M",
-  "content_scripts": [
-    
+  "content_scripts": [    
+    {
+      "matches": ["*://*.code4rena.com/audits/*"],
+      "js": ["code4renaLeaderboardLoookupFindings.js"],
+      "run_at": "document_idle"
+    },
     {
       "matches": ["*://*.code4rena.com/reports"],
       "js": ["code4renaReportsContestLookup.js"],
@@ -18,7 +22,7 @@
     },
     {
       "matches": ["*://code4rena.com/contests/*"],
-      "js": ["competitionsLoookupReport.js"],
+      "js": ["code4renacompetitionsLoookupReport.js"],
       "run_at": "document_idle"
     },
     {

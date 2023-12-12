@@ -40,7 +40,8 @@
         return findings
     }
 
-    await waitForElementToDisplay('.leaderboard-handle__name')
+    // await waitForElementToDisplay('.leaderboard-handle__name')
+    await waitForElementToDisplay('.core-app-leaderboard--table--body')
 
     let reportUrl = document.querySelector('a[href*="/reports/"]').href
     let html = await fetch(reportUrl).then(resp => {
@@ -49,14 +50,16 @@
     let container = document.createElement('div')
     container.innerHTML = html
 
-    let competitors = document.querySelectorAll('.leaderboard__competitor')
+    // let competitors = document.querySelectorAll('.leaderboard__competitor') 
+    let competitors = document.querySelectorAll('.leaderboard-handle')
 
     Array.from(competitors).slice(0, 20).forEach(competitor => {
         try {
             let username = competitor.querySelector('.leaderboard-handle__name') ? competitor.querySelector('.leaderboard-handle__name').innerText : competitor.querySelector('.team-name').querySelector('span').innerText
             let findings = getFindingsForUser(username)
             for (let finding of findings) {
-                competitor.parentElement.insertAdjacentHTML("beforebegin", `<a target="_blank" href='${finding.href}'>(${finding.foundByCount}) ${finding.title}</a><br>`)
+                // competitor.parentElement.insertAdjacentHTML("beforebegin", `<a target="_blank" href='${finding.href}'>(${finding.foundByCount}) ${finding.title}</a><br>`)
+                competitor.parentElement.parentElement.insertAdjacentHTML("beforebegin", `<a target="_blank" href='${finding.href}'>(${finding.foundByCount}) ${finding.title}</a><br>`)
             }
         } catch (e) {
             console.error(e)
