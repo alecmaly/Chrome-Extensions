@@ -4,6 +4,10 @@
   "description": "Add functionality to code4rena.com / solodit.xyz to improve experiennce",
   "version": "2.1.2",
   "author": "Alec M",
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  },
   "content_scripts": [    
     {
       "matches": ["*://*.code4rena.com/audits/*"],
@@ -54,7 +58,12 @@
       "matches": ["file://*covered.*.html"],
       "js": ["echidnaHelper.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.github.com/immunefi-team/Bounty_Boosts/tree/main/*"],
+      "js": ["github_immunefi.js"],
+      "run_at": "document_idle"
     }
   ],
-  "permissions": []
+  "host_permissions": ["https://immunefi.com/*"]
 }
