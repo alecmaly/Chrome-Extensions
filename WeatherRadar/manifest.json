@@ -1,0 +1,21 @@
+
+{
+  "manifest_version": 3,
+  "name": "Weather Radar",
+  "description": "",
+  "version": "2.1.6",
+  "author": "Alec Maly",
+  "content_scripts": [
+    {
+      "matches": ["*://*.accuweather.com/*"],
+      "js": ["inject.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+    "resources": [ "content.js" ],
+    "matches": ["*://*.accuweather.com/*"]
+    }
+  ],
+  "homepage_url": "https://www.accuweather.com/en/us/north-carolina/weather-radar"
+}
