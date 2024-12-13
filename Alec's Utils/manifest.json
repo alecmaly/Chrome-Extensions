@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Alec's Hacking Accordion",
-  "description": "Accordion",
+  "name": "Alec's Utils",
+  "description": "Utils for websites",
   "version": "2.1.2",
   "author": "Alec Maly",
   "content_scripts": [
@@ -33,7 +33,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["*://app.interactsh.com/*"],
+      "matches": ["*://app.interactsh.com/*", "*://interactsh.alecmaly.com/*"],
       "js": ["interactsh.js"],
       "run_at": "document_idle"
     }
