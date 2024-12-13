@@ -33,7 +33,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["*://app.interactsh.com/*", "*://interactsh.alecmaly.com/*"],
+      "matches": ["*://app.interactsh.com/*", "*://ish.alecmaly.com/*"],
       "js": ["interactsh.js"],
       "run_at": "document_idle"
     }
