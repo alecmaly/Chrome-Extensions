@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "FindBB Program Search",
+    "description": "Search for Bug Bounty Programs from various sources.",
+    "version": "1.0",
+    "permissions": ["storage", "activeTab", "tabs"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html",
+      "icons": {
+        "128": "icons/bug.png",
+        "128": "icons/bug_green.png"
+      }
+    },
+    "icons": {
+      "128": "icons/bug.png"
+    }
+  }
+  
