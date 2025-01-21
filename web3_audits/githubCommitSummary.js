@@ -10,7 +10,7 @@
 function getExtensionCounts(filenames) {
     let extensions = {};
     for (const filename of filenames) {
-      const extension = filename.toLowerCase().split('.').slice(-1)[0]
+      const extension = filename.toLowerCase().split('.').slice(-1)[0].trim()
       extensions[extension] = (extensions[extension] || 0) + 1;
     }
     return extensions
@@ -24,19 +24,19 @@ setInterval(() => {
     if (document.getElementById(GUID)) 
         return
 
-    let commits = document.querySelectorAll('.js-commits-list-item')
+    let commits = document.querySelectorAll('h4')
 
     commits.forEach(async commit => {
     
-        let link = commit.querySelector('[id^="commit-details"]').href
+        let link = commit.querySelector('[href*="/commit/"]').href
     
         let html = await fetch(link).then(resp => { return resp.text() }).then(html => { return html })
         let e = document.createElement('div')
         e.innerHTML = html
         
-        let items_updated = e.querySelectorAll('a.Link--primary.Truncate-text')
+        let items_updated = e.querySelectorAll('[class^="DiffFileHeader-module__file-name"]')
         let filenames = Array.from(items_updated).map(ele => { return ele.innerText }).filter(path => {
-            return !path.toLowerCase().includes('test')            
+            return !path.toLowerCase().includes('test')
         })
         // let extensions = Array.from(items_updated).map(ele => { return ele.innerText.split('.').slice(-1)[0] })
             
