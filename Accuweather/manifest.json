@@ -1,0 +1,38 @@
+{
+    "name": "Accuweather Radar Helper",
+    "description": "This extension helps you to refocus the map and add a marker on the radar map.",
+    "version": "1.0",
+    "manifest_version": 3,
+    "homepage_url": "https://www.accuweather.com/en/us/washington/20006/weather-radar/327659",
+    "host_permissions": [
+        "*://accuweather.com/*",
+        "*://www.google.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_title": "Add marker"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "injectedScript.js"
+            ],
+            "matches": [
+                "*://*.accuweather.com/*"
+            ]
+        }
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.accuweather.com/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ]
+}
