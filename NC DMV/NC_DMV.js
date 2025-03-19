@@ -36,7 +36,8 @@ async function getFirstAppointments() {
             loc_miles = parseInt(loc_miles.replace(" Miles", ""))
         }
 
-        if (!loc_miles || loc_miles > MILES_THRESHOLD) { continue }
+        // if (!loc_miles || loc_miles > MILES_THRESHOLD) { console.log("Skipping"); continue }
+        if (loc_miles > MILES_THRESHOLD) { console.log("Skipping"); continue }
         
         let data_id  = loc.getAttribute('data-id')
 

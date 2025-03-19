@@ -3,11 +3,11 @@
   "manifest_version": 3,
   "name": "NC DMV Scheduling Assistant",
   "description": "Assist in NC DMV scheduling",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "author": "Alec Maly",
   "content_scripts": [
     {
-      "matches": ["https://skiptheline.ncdot.gov/Webapp/Appointment/Index/a7ade79b-996d-4971-8766-97feb75254de"],
+      "matches": ["*://skiptheline.ncdot.gov/Webapp/Appointment/Index/a7ade79b-996d-4971-8766-97feb75254de"],
       "js": ["NC_DMV.js"]
     }
   ],
