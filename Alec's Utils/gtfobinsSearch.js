@@ -198,7 +198,7 @@ function unique_binaries_HTML() {
   // print searchsploit cmd to console
   let searchsploit_cmd = `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; searchsploit {}" | grep -v "No Results"`
   let ltrace_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; ltrace -o ltrace_output.txt {}; cat ltrace_output.txt | grep -i -e '^' -e system --color=always" `
-  let rpath_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; readelf -d {} | grep -Ei "rpath|runpath" --color=always"`
+  let rpath_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; readelf -d {} | grep -Ei 'rpath|runpath' --color=always"`
   // strace?
   // objdump -T "$b" 2>/dev/null | grep -E ' system@| popen@| exec(v|l|le|lp|vpe)?@| posix_spawn@'
   let objdump_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; objdump -T {} 2>/dev/null | grep -E ' system@| popen@| exec(v|l|le|lp|vpe)?@| posix_spawn@' --color=always"`
