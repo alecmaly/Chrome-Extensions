@@ -231,9 +231,9 @@ function unique_binaries_HTML() {
       `<span style='color:red'>${ltrace_cmd}</span>` + 
       '<br><br><h3>[TARGET MACHINE] possible path injection unique binaries.:</h3><p>Looking for possible path injections, relative binary paths. "export PATH=/tmp:$PATH" to exploit</p>' + 
       `<span style='color:red'>${path_injection_cmd}</span>` + 
-      '<br><br><h3>[TARGET MACHINE] rpath/runpath unique binaries.:</h3><p>Looking for rpath/runpath entries. "export PATH=/tmp:$PATH" to exploit</p>' + 
+      '<br><br><h3>[TARGET MACHINE] rpath/runpath unique binaries.:</h3><p>Looking for rpath/runpath entries.</p>' + 
       `<span style='color:red'>${rpath_cmd}</span>` + 
-      '<br><br><h3>[TARGET MACHINE] objdump unique binaries.:</h3><p>Looking for dynamic symbol table entries. "export PATH=/tmp:$PATH" to exploit</p>' + 
+      '<br><br><h3>[TARGET MACHINE] objdump unique binaries.:</h3><p>Looking for dynamic symbol table entries.</p>' + 
       `<span style='color:red'>${objdump_cmd}</span>`
 
 
