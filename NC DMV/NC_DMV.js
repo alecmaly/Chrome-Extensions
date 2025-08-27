@@ -155,8 +155,10 @@ let interval = setInterval(async () => { await getFirstAppointments() }, 1000 * 
 
 let lastZip = null
 let updateOutput = setInterval(async () => {
+    debugger
     let currentZip = document.querySelector("#search-input").value
     if (currentZip !== lastZip) {
+        console.log("Zip change, updating locations to track")
         lastZip = currentZip
         if (lastZip !== null) {
             window.data = {}

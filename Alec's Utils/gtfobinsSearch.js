@@ -12,6 +12,10 @@ ele.onkeyup = () => updateVisibility()
 wrapper.appendChild(ele)
 
 
+let helper_info = document.createElement('div')
+helper_info.innerText = "SUID: find / -perm 4000 -type f 2>/dev/null\nSGID: find / -perm 2000 -type f 2>/dev/null"
+
+wrapper.appendChild(helper_info)
 
 // on myinput change .. run func
 
@@ -194,8 +198,10 @@ function unique_binaries_HTML() {
   // print searchsploit cmd to console
   let searchsploit_cmd = `printf '` + unique_binary_for_searchsploit.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; searchsploit {}" | grep -v "No Results"`
   let ltrace_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; ltrace -o ltrace_output.txt {}; cat ltrace_output.txt | grep -i -e '^' -e system --color=always" `
-
-
+  let rpath_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; readelf -d {} | grep -Ei "rpath|runpath" --color=always"`
+  // strace?
+  // objdump -T "$b" 2>/dev/null | grep -E ' system@| popen@| exec(v|l|le|lp|vpe)?@| posix_spawn@'
+  let objdump_cmd = `printf '` + unique_binary_FULLPATH.join('\\n') + `' |xargs -I{} sh -c "echo; printf 'SEARCHING: \"{}\"\n'; echo; objdump -T {} 2>/dev/null | grep -E ' system@| popen@| exec(v|l|le|lp|vpe)?@| posix_spawn@' --color=always"`
 
   /*******  FUTURE ENHANCEMENT: TOGGLE PATH INJECTION SEARCHING TO SEARCH ALL INDIVIDUAL STRINGS (SPLIT BY NEWLINE)********/
   // let strings_split_space = false
@@ -211,7 +217,8 @@ function unique_binaries_HTML() {
   console.log('Searchsploit cmd:\n', searchsploit_cmd)
   console.log('ltrace cmd:\n', ltrace_cmd)
   console.log('path injection cmd:\n', path_injection_cmd)
-
+  console.log('rpath cmd:\n', rpath_cmd)
+  console.log('objdump cmd:\n', objdump_cmd)
 
   
   if (document.getElementById('unique_binaries_HTML')) {
@@ -223,7 +230,11 @@ function unique_binaries_HTML() {
       '<br><br><h3>[TARGET MACHINE] ltrace unique binaries.:</h3><p>Looking for system() calls with relative paths. "export PATH=/tmp:$PATH" to exploit</p>' + 
       `<span style='color:red'>${ltrace_cmd}</span>` + 
       '<br><br><h3>[TARGET MACHINE] possible path injection unique binaries.:</h3><p>Looking for possible path injections, relative binary paths. "export PATH=/tmp:$PATH" to exploit</p>' + 
-      `<span style='color:red'>${path_injection_cmd}</span>`
+      `<span style='color:red'>${path_injection_cmd}</span>` + 
+      '<br><br><h3>[TARGET MACHINE] rpath/runpath unique binaries.:</h3><p>Looking for rpath/runpath entries. "export PATH=/tmp:$PATH" to exploit</p>' + 
+      `<span style='color:red'>${rpath_cmd}</span>` + 
+      '<br><br><h3>[TARGET MACHINE] objdump unique binaries.:</h3><p>Looking for dynamic symbol table entries. "export PATH=/tmp:$PATH" to exploit</p>' + 
+      `<span style='color:red'>${objdump_cmd}</span>`
 
 
   } else {
