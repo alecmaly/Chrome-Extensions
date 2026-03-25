@@ -7,11 +7,16 @@ function FilterResults(search_str) {
     let rows = document.querySelector('.requests_table').querySelectorAll('tr')
     
     // show only search
-    for (let i = 0; i < requests.length; i++) {
-        if (!JSON.stringify(requests[i]).toLowerCase().includes(search_str.toLowerCase()))
-            rows[rows.length - i - 1].style.display = 'none'
-        else
-            rows[rows.length - i - 1].style.display = 'table'
+    for (let i = 1; i < rows.length; i++) {
+        try {
+            console.log("row", i, rows.length, rows[rows.length - i], JSON.stringify(requests[i + 1]).toLowerCase())
+            if (!JSON.stringify(requests[i + 1]).toLowerCase().includes(search_str.toLowerCase()))
+                rows[rows.length - i].style.display = 'none'
+            else
+                rows[rows.length - i].style.display = 'table'
+        } catch (err) {
+            console.log(i, err)
+        }
     }
 }
 
